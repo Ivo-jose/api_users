@@ -4,7 +4,7 @@ let knex = require('knex')({
         host: '127.0.0.1',
         user: 'ivo',
         password: 'karina3_gioVanna*36',
-        database: 'uses_api'
+        database: 'db_managenent_users'
     }
 });
 
