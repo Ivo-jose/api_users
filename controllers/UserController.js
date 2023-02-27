@@ -13,11 +13,12 @@ class UserController {
             password = password.trim(); 
         }
         
-        if(name == undefined || name.length > 3 || email == undefined  || email.length == 0 || password == undefined || password.length > 3 || role == undefined) {
+        if(name == undefined || name.length == 0 || email == undefined  || email.length == 0 || password == undefined || password.length > 3 || role == undefined) {
             res.status(400);
             res.json({err:'Null or incorrectly filled fields are invalid'}); 
-            return;
+            return; 
         }
+        res.status(200);
         res.send('Getting the request body');
     }
 }
