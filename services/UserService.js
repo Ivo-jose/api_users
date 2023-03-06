@@ -4,15 +4,33 @@ let bcrypt = require('bcrypt');
 
 class UserService {
 
+    async findAll() {
+        try {
+            let result = await knexConnection.select('id','name','email','role').table('users');
+            return {status: true, result};
+        } catch (error) {
+            return {status: false, err: error.message};
+        }
+    }
+
+
+    async findById(id) {
+        try {
+            let result = await knexConnection.select('id','name','email','role').table('users').where({id:id});
+            return {status:true, result}
+        } catch (error) {
+            console.log('Service: (findById)', error.message);
+            return {status: false, err: error.message};
+        }
+    }
+
     async create(name,email,password) {
         try {
             //Checking that the email provided does not exist, so that it can be registered
             let hasEmail = await this.findEmail(email);
-            console.log('service: create findEmail', hasEmail.result.length);
             if(hasEmail.result.length == 0) {
                 let hash = await bcrypt.hash(password,10);
                 let result = await knexConnection.insert({name: name, email: email, password: hash, role: 0}).table('users');
-                console.log('service: create ', result);
                 return {status:true, result}
             }
             else {
@@ -20,7 +38,6 @@ class UserService {
             }
            
         } catch (error) {
-            console.log(error.message);
             return {status:false, err: error.message};
         }
     }
