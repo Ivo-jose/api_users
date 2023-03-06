@@ -65,6 +65,28 @@ class UserController {
             return;
        }
     }
+
+    async update(req,res) {
+        let id = req.params.id;
+        let {name,email,role} = req.body;
+
+        if(id != undefined && name != undefined && email != undefined && role != undefined) {
+            let result = await UserService.update(id,name,email,role);
+            if(result.status) {
+                res.status(200);
+                res.json(result.user.result[0]);
+            }
+            else {
+                res.status(400);
+                res.json({err: result.err});
+            }
+        }
+        else {
+            res.status(406);
+            res.json({err:'Null or incorrectly filled fields are invalid'}); 
+        }
+
+    }
 }
 
 //Exports

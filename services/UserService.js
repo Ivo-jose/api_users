@@ -42,6 +42,31 @@ class UserService {
         }
     }
 
+    async update(id,name,email,role) {
+        let user = await this.findById(id);
+        console.log('Service (update): ',user)
+        if(user.status && user.result.length > 0) { 
+            let result = await this.findEmail(email);
+            console.log('Service (update)', result);
+            if((result.status && result.result.length == 0) || (result.status && result.result[0].email == user.result[0].email)) {
+                try {
+                   await knexConnection.update({name:name,email:email,role:role}).where({id:id}).table('users');
+                   user = await this.findById(id);
+                   return {status:true, user};
+                }   
+                catch(error) {
+                    return {status:false, err: error.message}
+                }
+            }
+            else {
+                return {status: false, err:'This email is already registered in the system'};
+            }
+        }
+        else {
+            return {status:false, err: `There are no records for this ID! Id: ${id}`};
+        }
+    }
+
 
     //Method to check if the email already exists in the db
     async findEmail(email) {
