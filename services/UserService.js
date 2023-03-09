@@ -17,7 +17,13 @@ class UserService {
     async findById(id) {
         try {
             let result = await knexConnection.select('id','name','email','role').table('users').where({id:id});
-            return {status:true, result}
+            if(result.length > 0) {
+                return {status:true, result};
+            }
+            else {
+                return {status: false, err: `There are no records for this ID! Id: ${id}`};
+            } 
+            
         } catch (error) {
             console.log('Service: (findById)', error.message);
             return {status: false, err: error.message};
@@ -63,10 +69,25 @@ class UserService {
             }
         }
         else {
-            return {status:false, err: `There are no records for this ID! Id: ${id}`};
+            return {status:false, err: user.err};
         }
     }
 
+
+    async  delete(id) {
+        let user  = await this.findById(id);
+        try {
+            if(user.status && user.result.length > 0){
+                await knexConnection.table('users').where({id:id}).del();
+                return {status: true};
+            }
+            else {
+                return {status: false, err: user.err};
+            }
+        } catch (error) {
+            return {status:false, err: error.message};
+        }
+    }
 
     //Method to check if the email already exists in the db
     async findEmail(email) {

@@ -56,7 +56,8 @@ class UserController {
        let result = await UserService.create(name,email,password);
        if(result.status) {
             res.status(200);
-            res.send('Getting the request body');
+            console.log()
+            res.send({mgs:`Created new user Id: ${result.result}`});
             return;
        }
        else {
@@ -69,7 +70,6 @@ class UserController {
     async update(req,res) {
         let id = req.params.id;
         let {name,email,role} = req.body;
-
         if(id != undefined && name != undefined && email != undefined && role != undefined) {
             let result = await UserService.update(id,name,email,role);
             if(result.status) {
@@ -85,7 +85,25 @@ class UserController {
             res.status(406);
             res.json({err:'Null or incorrectly filled fields are invalid'}); 
         }
+    }
 
+    async delete(req,res){
+        let id = req.params.id;
+        if(id != undefined && !isNaN(id)) {
+            let result = await UserService.delete(id);
+            if(result.status) {
+                res.status(204);
+                res.json({msg: 'successfully deleted'});
+            }
+            else {
+                res.status(400);
+                res.json({err: result.err});
+            }
+        }
+        else {
+            res.status(406);
+            res.json({err:'Id invalid or passed incorrectly!'});
+        }
     }
 }
 
