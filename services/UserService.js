@@ -33,7 +33,7 @@ class UserService {
     async create(name,email,password) {
         try {
             //Checking that the email provided does not exist, so that it can be registered
-            let hasEmail = await this.findEmail(email);
+            let hasEmail = await this.findByEmail(email);
             if(hasEmail.result.length == 0) {
                 let hash = await bcrypt.hash(password,10);
                 let result = await knexConnection.insert({name: name, email: email, password: hash, role: 0}).table('users');
@@ -52,7 +52,7 @@ class UserService {
         let user = await this.findById(id);
         console.log('Service (update): ',user)
         if(user.status && user.result.length > 0) { 
-            let result = await this.findEmail(email);
+            let result = await this.findByEmail(email);
             console.log('Service (update)', result);
             if((result.status && result.result.length == 0) || (result.status && result.result[0].email == user.result[0].email)) {
                 try {
@@ -90,7 +90,7 @@ class UserService {
     }
 
     //Method to check if the email already exists in the db
-    async findEmail(email) {
+    async findByEmail(email) {
         try {
             let result = await knexConnection.select('*').where({email:email}).from('users');
             console.log('service: findEmail ', result);

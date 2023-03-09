@@ -1,5 +1,6 @@
 //Imports
-let UserService = require('../services/UserService');
+const UserService = require('../services/UserService');
+const PasswordTokenService = require('../services/PasswordTokenService');
 
 class UserController {
 
@@ -53,8 +54,7 @@ class UserController {
        let result = await UserService.create(name,email,password);
        if(result.status) {
             res.status(200);
-            console.log()
-            res.send({mgs:`Created new user Id: ${result.result}`});
+            res.json({mgs:`Created new user Id: ${result.result}`});
             return;
        }
        else {
@@ -100,6 +100,26 @@ class UserController {
         else {
             res.status(406);
             res.json({err:'Id invalid or passed incorrectly!'});
+        }
+    }
+
+    //Password recovery method
+    async recoverPassword(req,res) {
+        let email = req.body.email;
+        if(email != undefined) {
+            let result  = await PasswordTokenService.create(email);
+            if(result.status) {
+                res.status(200);
+                res.json({token: result.token});
+            }
+            else {
+                res.status(400);
+                res.json({err: result.err});
+            }
+        }
+        else {
+            res.status(406);
+            res.json({err: 'Please, enter a valid email address!'});
         }
     }
 }
