@@ -3,9 +3,6 @@ let UserService = require('../services/UserService');
 
 class UserController {
 
-    async index(req,res) {}
-
-
     async findAll(req,res) {
         let users = await UserService.findAll();
         if(users.status) {
