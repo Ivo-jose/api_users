@@ -4,6 +4,7 @@ const PasswordTokenService = require('../services/PasswordTokenService');
 
 class UserController {
 
+    //CRUD USER starts here
     async findAll(req,res) {
         let users = await UserService.findAll();
         if(users.status) {
@@ -72,15 +73,18 @@ class UserController {
             if(result.status) {
                 res.status(200);
                 res.json(result.user.result[0]);
+                return;
             }
             else {
                 res.status(400);
                 res.json({err: result.err});
+                return;
             }
         }
         else {
             res.status(406);
             res.json({err:'Null or incorrectly filled fields are invalid'}); 
+            return;
         }
     }
 
@@ -91,17 +95,21 @@ class UserController {
             if(result.status) {
                 res.status(204);
                 res.json({msg: 'successfully deleted'});
+                return;
             }
             else {
                 res.status(400);
                 res.json({err: result.err});
+                return;
             }
         }
         else {
             res.status(406);
             res.json({err:'Id invalid or passed incorrectly!'});
+            return;
         }
-    }
+    }//CRUD USER end here
+
 
     //Password recovery method
     async recoverPassword(req,res) {
@@ -111,18 +119,59 @@ class UserController {
             if(result.status) {
                 res.status(200);
                 res.json({token: result.token});
+                return;
             }
             else {
                 res.status(400);
                 res.json({err: result.err});
+                return;
             }
         }
         else {
             res.status(406);
             res.json({err: 'Please, enter a valid email address!'});
+            return;
         }
     }
-}
+
+    //Password change method
+    async changePassword (req,res) {
+        let token = req.body.token;
+        let password = req.body.password;
+        let result;
+        //Validating data sent in the request
+        if(token !== undefined && password !== undefined) {
+            //Validating minimum password length
+            if(password.length >= 3) {
+                //Validating token
+              result = await PasswordTokenService.validate(token);
+            }
+            else {
+                res.status(406);
+                res.json({err: 'The minimum password length is three characters.'});
+                return;
+            }
+            //Checking token validation result
+            if(result.status) {
+               let value = await UserService.changePassword(password, result.id, result.token);
+               console.log('changePassword (UserController)', value);
+               res.status(200);
+               res.json({msg:'Password changed'});
+               return;
+            }
+            else {
+                res.status(400);
+                res.json({err: result.err})
+                return;
+            }
+        }
+        else {
+            res.status(406);
+            res.json({err: 'Error token or password invalid!'});
+            return;
+        }
+    } 
+} 
 
 //Exports
 module.exports = new UserController();

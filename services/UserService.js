@@ -1,9 +1,11 @@
 //Import
-let knexConnection = require('../database/connection');
-let bcrypt = require('bcrypt');
+const knexConnection = require('../database/connection');
+const bcrypt = require('bcrypt');
+const PasswordTokenService = require('./PasswordTokenService')
 
 class UserService {
 
+    //CRUD USER starts here
     async findAll() {
         try {
             let result = await knexConnection.select('id','name','email','role').table('users');
@@ -87,7 +89,7 @@ class UserService {
         } catch (error) {
             return {status:false, err: error.message};
         }
-    }
+    }//CRED USER end here
 
     //Method to check if the email already exists in the db
     async findByEmail(email) {
@@ -100,6 +102,18 @@ class UserService {
             console.log('servvice findEmail error ', error.message);
             return {status:false, err:error.message};
         }
+    }
+
+    //Password change method
+    async changePassword(newPassword, id, token) {
+        let hash = await bcrypt.hash(newPassword, 10);
+        try {
+            let result = await knexConnection('users').where({id: id}).update({password: hash}); 
+            await PasswordTokenService.setUsed(token);
+            return{status: true, result};
+        } catch (error) {
+            return {status:false, err: error};
+        }    
     }
 }
 
