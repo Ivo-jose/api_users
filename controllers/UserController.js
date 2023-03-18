@@ -38,7 +38,7 @@ class UserController {
 
     async create(req,res) {
         let {name,email,password} = req.body;
-        
+        console.log(name, email, password);
         //Improving data for validation
         if(name != undefined && email != undefined && password != undefined) {
             name = name.trim();
@@ -46,7 +46,7 @@ class UserController {
             password = password.trim(); 
         }
         
-        if(name == undefined || name.length == 0 || email == undefined  || email.length == 0 || password == undefined || password.length > 3) {
+        if(name == undefined || name.length == 0 || email == undefined  || email.length == 0 || password == undefined || password.length <= 3) {
             res.status(400);
             res.json({err:'Null or incorrectly filled fields are invalid'}); 
             return; 

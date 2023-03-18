@@ -99,7 +99,7 @@ class UserService {
             return {status:true, result};
         }
         catch(error) {
-            console.log('servvice findEmail error ', error.message);
+            console.log('service findEmail error ', error.message);
             return {status:false, err:error.message};
         }
     }
@@ -115,6 +115,7 @@ class UserService {
             return {status:false, err: error};
         }    
     }
+
 }
 
 //Export

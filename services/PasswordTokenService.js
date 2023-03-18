@@ -1,24 +1,27 @@
 //Importing libs
 const knexConnection = require('../database/connection');
-const UserService = require('./UserService');
+let UserService = require('./UserService');
 
 class PasswordToken {
 
     //Method for creating token
     async create(email) {
-        let user = await UserService.findByEmail(email);
-        if(user.result.length > 0) {
-            let token =  Date.now();
-            try {
-                await knexConnection.insert({user_id: user.result[0].id, token: token, used: 0}).table('password_tokens');
-                return {status:true,token};
-            } catch (error) {
-                return {status:false, err: error.message};
+        console.log('password token', email);
+        let token = Date.now();
+        try {
+            var user = await this.findByEmail(email);
+            if(user != undefined) {
+                await knexConnection.insert({user_id: user.result[0].id, used:0, token: token}).table('password_tokens');
+                return {status: true, token: token};
             }
-        } 
-        else {
-            return {status:false, err: 'There are no records users with this e-mail! '};
-        }
+            else {
+                return {status:false, err:'The email provided does not exist'};
+            }
+             
+        }    
+        catch(error) {
+            return {status:false, err: error.message}
+        }    
     }
 
     //Method for validating the token
@@ -46,6 +49,19 @@ class PasswordToken {
     //Changing token status from unused to used
     async setUsed (token) {
         await  knexConnection('password_tokens').where({token: token}).update({used: 1});
+    }
+
+    //Method to check if the email already exists in the db
+    async findByEmail(email) {
+        try {
+            let result = await knexConnection.select('*').where({email:email}).from('users');
+            console.log('passs: findEmail ', result);
+            return {status:true, result};
+        }
+        catch(error) {
+            console.log('pass findEmail error ', error.message);
+            return {status:false, err:error.message};
+        }
     }
 }
 
