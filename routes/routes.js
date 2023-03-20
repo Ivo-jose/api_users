@@ -11,6 +11,7 @@ let router = express.Router();
 router.get('/', HomeController.index);
 //USERS:
 //post
+router.post('/user/login', UserController.login);
 router.post('/user', UserController.create);
 router.post('/user/recoverPassword', UserController.recoverPassword);
 router.post('/user/changePassword',UserController.changePassword);

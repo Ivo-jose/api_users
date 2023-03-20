@@ -1,6 +1,9 @@
 //Imports
 const UserService = require('../services/UserService');
 const PasswordTokenService = require('../services/PasswordTokenService');
+const jwt = require('jsonwebtoken');
+const secret = 'pararicotirimurruaro';
+const bcrypt = require('bcrypt');
 
 class UserController {
 
@@ -170,6 +173,39 @@ class UserController {
             return;
         }
     } 
+
+    //User login
+    async login(req, res){
+        let {email, password} = req.body;
+        if(email != undefined && password != undefined) {
+            let user = await UserService.findByEmail(email);
+            if(user != undefined) {
+               let result = await bcrypt.compare(password,user.result[0].password);
+                if(result) {
+                    var token = jwt.sign({ email: user.result[0].email, role: user.result[0].role }, 'secret');
+                    res.status(200);
+                    res.json({token: token});
+                    return;
+                }
+                else {
+                    res.status(403);
+                    res.json({err: 'Invalid password', status:result});
+                    return;
+                }
+            }
+            else {
+                res.status(404);
+                res.json({err: 'There are no users for this email'});
+                return;
+            }
+
+        }
+        else {
+            res.status(406);
+            res.json({err: 'Email and password are required!'});
+            return;
+        }
+    }
 } 
 
 //Exports
