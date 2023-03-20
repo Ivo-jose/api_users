@@ -2,7 +2,7 @@
 const UserService = require('../services/UserService');
 const PasswordTokenService = require('../services/PasswordTokenService');
 const jwt = require('jsonwebtoken');
-const secret = 'pararicotirimurruaro';
+const secret = require('../security/secret');
 const bcrypt = require('bcrypt');
 
 class UserController {
@@ -182,7 +182,7 @@ class UserController {
             if(user != undefined) {
                let result = await bcrypt.compare(password,user.result[0].password);
                 if(result) {
-                    var token = jwt.sign({ email: user.result[0].email, role: user.result[0].role }, 'secret');
+                    var token = jwt.sign({ email: user.result[0].email, role: user.result[0].role }, secret);
                     res.status(200);
                     res.json({token: token});
                     return;

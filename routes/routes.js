@@ -2,6 +2,7 @@
 let express = require('express');
 let HomeController = require('../controllers/HomeController');
 let UserController = require('../controllers/UserController');
+let AdminAuth = require('../middleware/AdminAuth');
 //Instances
 let app = express();
 let router = express.Router();
@@ -13,15 +14,15 @@ router.get('/', HomeController.index);
 //post
 router.post('/user/login', UserController.login);
 router.post('/user', UserController.create);
-router.post('/user/recoverPassword', UserController.recoverPassword);
-router.post('/user/changePassword',UserController.changePassword);
+router.post('/user/recoverPassword', AdminAuth.userAuthorization, UserController.recoverPassword);
+router.post('/user/changePassword', AdminAuth.userAuthorization, UserController.changePassword);
 //get
-router.get('/user', UserController.findAll);
-router.get('/user/:id', UserController.findById);
+router.get('/user', AdminAuth.userAuthorization, UserController.findAll);
+router.get('/user/:id',AdminAuth.userAuthorization, UserController.findById);
 //put
-router.put('/user/:id', UserController.update);
+router.put('/user/:id', AdminAuth.adminAuthorization , UserController.update);
 //delete
-router.delete('/user/:id', UserController.delete);
+router.delete('/user/:id', AdminAuth.adminAuthorization, UserController.delete);
 
 
 
