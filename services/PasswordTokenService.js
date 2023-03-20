@@ -6,7 +6,6 @@ class PasswordToken {
 
     //Method for creating token
     async create(email) {
-        console.log('password token', email);
         let token = Date.now();
         try {
             var user = await this.findByEmail(email);

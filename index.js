@@ -16,6 +16,6 @@ app.use(bodyParser.json())
 app.use('/', router);
 
 //Server
-app.listen(8888,() => {
+app.listen(8080,() => {
     console.log('Running server');
 }) 

@@ -136,8 +136,7 @@ class UserController {
 
     //Password change method
     async changePassword (req,res) {
-        let token = req.body.token;
-        let password = req.body.password;
+        let {token,password} = req.body;
         let result;
         //Validating data sent in the request
         if(token !== undefined && password !== undefined) {
