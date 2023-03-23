@@ -179,7 +179,7 @@ class UserController {
         let {email, password} = req.body;
         if(email != undefined && password != undefined) {
             let user = await UserService.findByEmail(email);
-            if(user != undefined) {
+            if(user != undefined && user.result.length > 0) {
                let result = await bcrypt.compare(password,user.result[0].password);
                 if(result) {
                     var token = jwt.sign({ email: user.result[0].email, role: user.result[0].role }, secret);
