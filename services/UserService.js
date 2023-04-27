@@ -36,7 +36,7 @@ class UserService {
         try {
             //Checking that the email provided does not exist, so that it can be registered
             let hasEmail = await this.findByEmail(email);
-            if(hasEmail.result.length == 0) {
+            if(!hasEmail.status) {
                 let hash = await bcrypt.hash(password,10);
                 let result = await knexConnection.insert({name: name, email: email, password: hash, role: 0}).table('users');
                 return {status:true, result}
@@ -56,7 +56,7 @@ class UserService {
         if(user.status && user.result.length > 0) { 
             let result = await this.findByEmail(email);
             console.log('Service (update)', result);
-            if((result.status && result.result.length == 0) || (result.status && result.result[0].email == user.result[0].email)) {
+            if(!result.status  || (result.status && result.result[0].email == user.result[0].email)) {
                 try {
                    await knexConnection.update({name:name,email:email,role:role}).where({id:id}).table('users');
                    user = await this.findById(id);
@@ -79,7 +79,7 @@ class UserService {
     async  delete(id) {
         let user  = await this.findById(id);
         try {
-            if(user.status && user.result.length > 0){
+            if(user.status){
                 await knexConnection.table('users').where({id:id}).del();
                 return {status: true};
             }
@@ -96,7 +96,14 @@ class UserService {
         try {
             let result = await knexConnection.select('*').where({email:email}).from('users');
             console.log('service: findEmail ', result);
-            return {status:true, result};
+            if(result.length > 0) {
+                return {status:true, result};
+            }
+            else {
+                return {status:false, err: 'User not found!'};
+            }
+
+            
         }
         catch(error) {
             console.log('service findEmail error ', error.message);

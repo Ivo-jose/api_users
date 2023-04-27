@@ -49,10 +49,10 @@ class UserController {
             password = password.trim(); 
         }
         
-        if(name == undefined || name.length == 0 || email == undefined  || email.length == 0 || password == undefined || password.length <= 3) {
+        if(name == undefined || name.length < 3 || email == undefined  || email.length == 0 || password == undefined || password.length <= 3) {
             res.status(400);
             res.json({err:'Null or incorrectly filled fields are invalid'}); 
-            return; 
+            return;
         }
 
        let result = await UserService.create(name,email,password);
@@ -62,8 +62,9 @@ class UserController {
             return;
        }
        else {
-            res.status(406);
+            res.status(400);
             res.json({err: result.err});
+            console.log(result.err)
             return;
        }
     }
@@ -179,10 +180,11 @@ class UserController {
         let {email, password} = req.body;
         if(email != undefined && password != undefined) {
             let user = await UserService.findByEmail(email);
-            if(user != undefined && user.result.length > 0) {
+            if(user != undefined && user.status) {
                let result = await bcrypt.compare(password,user.result[0].password);
                 if(result) {
                     var token = jwt.sign({ email: user.result[0].email, role: user.result[0].role }, secret);
+                   // console.log(token);
                     res.status(200);
                     res.json({token: token});
                     return;

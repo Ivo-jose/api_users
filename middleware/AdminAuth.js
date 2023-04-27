@@ -5,6 +5,7 @@ const secret = require('../security/secret');
 
 class AdminAuth {
      adminAuthorization(req,res,next) {
+        //console.log('req admin: ',req)
         const authToken = req.headers['authorization'];
         if(authToken != undefined) {
             const bearer = authToken.split(' ');
@@ -35,6 +36,7 @@ class AdminAuth {
     }
 
     userAuthorization(req,res,next) {
+        //console.log('req user: ',req)
         const authToken = req.headers['authorization'];
         if(authToken != undefined) {
             const bearer = authToken.split(' ');
